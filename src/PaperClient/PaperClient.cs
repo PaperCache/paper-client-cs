@@ -51,6 +51,24 @@ public class PaperClient {
 			new PaperResponse<string>(null, data);
 	}
 
+	public PaperResponse<string> Auth(string token) {
+		var writer = new SheetWriter();
+		writer.WriteU8((byte)CommandByte.Auth);
+		writer.WriteString(token);
+
+		var stream = this.tcp_client.GetStream();
+		writer.Send(ref stream);
+
+		var reader = new SheetReader(stream);
+
+		var is_ok = reader.ReadBool();
+		var data = reader.ReadString();
+
+		return is_ok ?
+			new PaperResponse<string>(data, null) :
+			new PaperResponse<string>(null, data);
+	}
+
 	public PaperResponse<string> Get(string key) {
 		var writer = new SheetWriter();
 		writer.WriteU8((byte)CommandByte.Get);
@@ -280,19 +298,21 @@ enum CommandByte : byte {
 	Ping = 0,
 	Version = 1,
 
-	Get = 2,
-	Set = 3,
-	Del = 4,
+	Auth = 2,
 
-	Has = 5,
-	Peek = 6,
-	Ttl = 7,
-	Size = 8,
+	Get = 3,
+	Set = 4,
+	Del = 5,
 
-	Wipe = 9,
+	Has = 6,
+	Peek = 7,
+	Ttl = 8,
+	Size = 9,
 
-	Resize = 10,
-	Policy = 11,
+	Wipe = 10,
 
-	Stats = 12,
+	Resize = 11,
+	Policy = 12,
+
+	Stats = 13,
 }

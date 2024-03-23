@@ -16,6 +16,14 @@ public class PaperPool {
 		}
 	}
 
+	public void Auth(string token) {
+		for (int i=0; i<this.clients.Length; i++) {
+			this.locks[i].WaitOne();
+			this.clients[i].Auth(token);
+			this.locks[i].ReleaseMutex();
+		}
+	}
+
 	public LockableClient Client() {
 		int index = this.index;
 		int new_index = (index + 1) % this.clients.Length;
