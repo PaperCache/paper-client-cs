@@ -21,20 +21,34 @@ public class SheetReader {
 	public UInt32 ReadU32() {
 		byte[] buf = new byte[4];
 		this.tcp_stream.Read(buf, 0, buf.Length);
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
 		return BitConverter.ToUInt32(buf);
 	}
 
 	public UInt64 ReadU64() {
 		byte[] buf = new byte[8];
 		this.tcp_stream.Read(buf, 0, buf.Length);
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
 		return BitConverter.ToUInt64(buf);
 	}
 
-	public float ReadF64() {
+	public double ReadF64() {
 		byte[] buf = new byte[8];
 		this.tcp_stream.Read(buf, 0, buf.Length);
-		//return BitConverter.ToUInt64(buf);
-		return 0;
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
+		return BitConverter.ToDouble(buf);
 	}
 
 	public string ReadString() {

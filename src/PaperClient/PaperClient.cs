@@ -132,7 +132,7 @@ public class PaperClient {
 	public PaperResponse<string> Policy(PaperPolicy policy) {
 		var writer = new SheetWriter();
 		writer.WriteU8((byte)CommandByte.Policy);
-		writer.WriteU64((byte)policy);
+		writer.WriteU8((byte)policy);
 
 		return this.Process(writer);
 	}

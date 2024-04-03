@@ -26,6 +26,6 @@ public class ResizeTest : PaperClientTest {
 		Assert.NotNull(data);
 
 		var stats = data.Value;
-		return stats.MaxSize();
+		return stats.max_size;
 	}
 }

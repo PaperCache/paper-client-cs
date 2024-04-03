@@ -8,7 +8,7 @@ public struct PaperStats {
 	public UInt64 total_sets { get; }
 	public UInt64 total_dels { get; }
 
-	public float miss_ratio { get; }
+	public double miss_ratio { get; }
 
 	public PaperPolicy policy { get; }
 	public UInt64 uptime { get; }
@@ -21,7 +21,7 @@ public struct PaperStats {
 		UInt64 total_sets,
 		UInt64 total_dels,
 
-		float miss_ratio,
+		double miss_ratio,
 
 		byte policy_byte,
 		UInt64 uptime
@@ -37,10 +37,6 @@ public struct PaperStats {
 
 		this.policy = PaperStats.GetPolicyFromByte(policy_byte);
 		this.uptime = uptime;
-	}
-
-	public UInt64 MaxSize() {
-		return this.max_size;
 	}
 
 	private static PaperPolicy GetPolicyFromByte(byte value) {

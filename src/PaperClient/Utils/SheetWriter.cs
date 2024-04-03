@@ -15,19 +15,34 @@ public class SheetWriter {
 	}
 
 	public void WriteU32(UInt32 value) {
-		byte[] bytes = BitConverter.GetBytes(value);
-		this.buf.AddRange(bytes);
+		byte[] buf = BitConverter.GetBytes(value);
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
+		this.buf.AddRange(buf);
 	}
 
 	public void WriteU64(UInt64 value) {
-		byte[] bytes = BitConverter.GetBytes(value);
-		this.buf.AddRange(bytes);
+		byte[] buf = BitConverter.GetBytes(value);
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
+		this.buf.AddRange(buf);
 	}
 
 	public void WriteString(string value) {
 		this.WriteU32((UInt32)value.Length);
-		byte[] bytes = Encoding.UTF8.GetBytes(value);
-		this.buf.AddRange(bytes);
+		byte[] buf = Encoding.UTF8.GetBytes(value);
+
+		if (!BitConverter.IsLittleEndian) {
+			Array.Reverse(buf);
+		}
+
+		this.buf.AddRange(buf);
 	}
 
 	public void Send(ref NetworkStream tcp_stream) {
