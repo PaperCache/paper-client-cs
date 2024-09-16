@@ -13,10 +13,22 @@ public class PaperClient {
 
 	private TcpClient tcp_client;
 
-	public PaperClient(string host, int port) {
+	public PaperClient(string paper_addr) {
 		try {
-			this.host = host;
-			this.port = port;
+			if (!paper_addr.StartsWith("paper://")) {
+				throw new ArgumentException("Invalid Paper address");
+			}
+
+			var parsed = paper_addr
+				.Substring("paper://".Length)
+				.Split(':');
+
+			if (parsed.Length != 2) {
+				throw new ArgumentException("Invalid Paper address");
+			}
+
+			this.host = parsed[0];
+			this.port = int.Parse(parsed[1]);
 
 			this.auth_token = "";
 			this.reconnect_attempts = 0;

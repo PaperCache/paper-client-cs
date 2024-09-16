@@ -5,13 +5,13 @@ public class PaperPool {
 	private Mutex[] locks;
 	private int index;
 
-	public PaperPool(string host, int port, int size) {
+	public PaperPool(string paper_addr, int size) {
 		this.clients = new PaperClient[size];
 		this.locks = new Mutex[size];
 		this.index = 0;
 
 		for (int i=0; i<size; i++) {
-			this.clients[i] = new PaperClient(host, port);
+			this.clients[i] = new PaperClient(paper_addr);
 			this.locks[i] = new Mutex();
 		}
 	}

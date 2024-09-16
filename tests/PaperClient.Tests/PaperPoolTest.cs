@@ -3,7 +3,7 @@ namespace PaperClient.Tests;
 public class PaperPoolTest {
 	[Fact]
 	public void Pool() {
-		var pool = new PaperPool("127.0.0.1", 3145, 2);
+		var pool = new PaperPool("paper://127.0.0.1:3145", 2);
 
 		for (int i=0; i<10; i++) {
 			var lockable_client = pool.Client();
@@ -20,7 +20,7 @@ public class PaperPoolTest {
 
 	[Fact]
 	public void Auth() {
-		var pool = new PaperPool("127.0.0.1", 3145, 2);
+		var pool = new PaperPool("paper://127.0.0.1:3145", 2);
 
 		Assert.False(this.CanSet(pool));
 		pool.Auth("auth_token");
