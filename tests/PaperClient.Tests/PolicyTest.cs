@@ -3,8 +3,8 @@ namespace PaperClient.Tests;
 public class PolicyTest : PaperClientTest {
 	[Fact]
 	public void Policy() {
-		const PaperPolicy INITIAL_POLICY = PaperPolicy.Lfu;
-		const PaperPolicy UPDATED_POLICY = PaperPolicy.Fifo;
+		const INITIAL_POLICY = "lfu";
+		const UPDATED_POLICY = "fifo";
 
 		var initial_response = this.client.Policy(INITIAL_POLICY);
 
