@@ -3,20 +3,13 @@ namespace PaperClient.Tests;
 public class TtlTest : PaperClientTest {
 	[Fact]
 	public void TtlNonExistent() {
-		var response = this.client.Ttl("key");
-
-		Assert.False(response.IsOk());
-		Assert.NotNull(response.ErrData());
+		var err = Assert.Throws<PaperError>(() => this.client.Ttl("key", 1));
+		Assert.Equal(PaperError.Type.KeyNotFound, err.GetType());
 	}
 
 	[Fact]
 	public void TtlExistent() {
-		var set = this.client.Set("key", "value");
-		Assert.True(set.IsOk());
-
-		var response = this.client.Ttl("key");
-
-		Assert.True(response.IsOk());
-		Assert.NotNull(response.Data());
+		this.client.Set("key", "value");
+		this.client.Ttl("key", 1);
 	}
 }

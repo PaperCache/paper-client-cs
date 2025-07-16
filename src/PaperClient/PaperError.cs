@@ -7,7 +7,7 @@ public class PaperError : Exception {
 		this.type = type;
 	}
 
-	public Type GetType() {
+	public new Type GetType() {
 		return this.type;
 	}
 
@@ -21,7 +21,7 @@ public class PaperError : Exception {
 			}
 
 			return PaperError.FromCode(code);
-		} catch (Exception err) {
+		} catch {
 			return new PaperError(Type.Internal);
 		}
 	}

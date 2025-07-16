@@ -3,21 +3,15 @@ namespace PaperClient.Tests;
 public class GetTest : PaperClientTest {
 	[Fact]
 	public void GetNonExistent() {
-		var response = this.client.Get("key");
-
-		Assert.False(response.IsOk());
-		Assert.NotNull(response.ErrData());
+		var err = Assert.Throws<PaperError>(() => this.client.Get("key"));
+		Assert.Equal(PaperError.Type.KeyNotFound, err.GetType());
 	}
 
 	[Fact]
 	public void GetExistent() {
-		var set = this.client.Set("key", "value");
-		Assert.True(set.IsOk());
+		this.client.Set("key", "value");
+		var got = this.client.Get("key");
 
-		var response = this.client.Get("key");
-
-		Assert.True(response.IsOk());
-		Assert.NotNull(response.Data());
-		Assert.Equal("value", response.Data());
+		Assert.Equal("value", got);
 	}
 }

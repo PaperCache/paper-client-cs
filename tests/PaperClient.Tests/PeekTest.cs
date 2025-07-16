@@ -3,21 +3,15 @@ namespace PaperClient.Tests;
 public class PeekTest : PaperClientTest {
 	[Fact]
 	public void PeekNonExistent() {
-		var response = this.client.Peek("key");
-
-		Assert.False(response.IsOk());
-		Assert.NotNull(response.ErrData());
+		var err = Assert.Throws<PaperError>(() => this.client.Peek("key"));
+		Assert.Equal(PaperError.Type.KeyNotFound, err.GetType());
 	}
 
 	[Fact]
 	public void PeekExistent() {
-		var set = this.client.Set("key", "value");
-		Assert.True(set.IsOk());
+		this.client.Set("key", "value");
+		var got = this.client.Peek("key");
 
-		var response = this.client.Peek("key");
-
-		Assert.True(response.IsOk());
-		Assert.NotNull(response.Data());
-		Assert.Equal("value", response.Data());
+		Assert.Equal("value", got);
 	}
 }

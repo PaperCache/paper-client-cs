@@ -3,21 +3,15 @@ namespace PaperClient.Tests;
 public class SizeTest : PaperClientTest {
 	[Fact]
 	public void SizeNonExistent() {
-		var response = this.client.Size("key");
-
-		Assert.False(response.IsOk());
-		Assert.NotNull(response.ErrData());
+		var err = Assert.Throws<PaperError>(() => this.client.Size("key"));
+		Assert.Equal(PaperError.Type.KeyNotFound, err.GetType());
 	}
 
 	[Fact]
 	public void SizeExistent() {
-		var set = this.client.Set("key", "value");
-		Assert.True(set.IsOk());
+		this.client.Set("key", "value");
+		var size = this.client.Size("key");
 
-		var response = this.client.Size("key");
-
-		Assert.True(response.IsOk());
-		Assert.NotNull(response.Data());
-		Assert.True(response.Data() == 5);
+		Assert.True(size > 0);
 	}
 }

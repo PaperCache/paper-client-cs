@@ -10,9 +10,7 @@ public class PaperPoolTest {
 			var client = lockable_client.Lock();
 
 			var response = client.Ping();
-
-			Assert.True(response.IsOk());
-			Assert.Equal("pong", response.Data());
+			Assert.Equal("pong", response);
 
 			lockable_client.Unlock();
 		}
@@ -31,10 +29,14 @@ public class PaperPoolTest {
 		var lockable_client = pool.Client();
 		var client = lockable_client.Lock();
 
-		var response = client.Set("key", "value");
+		try {
+			client.Set("key", "value");
+			lockable_client.Unlock();
 
-		lockable_client.Unlock();
-
-		return response.IsOk();
+			return true;
+		} catch {
+			lockable_client.Unlock();
+			return false;
+		}
 	}
 }

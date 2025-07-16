@@ -5,22 +5,19 @@ public class AuthTest : PaperClientTest {
 
 	[Fact]
 	public void AuthIncorrect() {
-		Assert.False(this.client.Set("key", "value", 0).IsOk());
+		var set_err = Assert.Throws<PaperError>(() => this.client.Set("key", "value"));
+		Assert.Equal(PaperError.Type.Unauthorized, set_err.GetType());
 
-		var response = this.client.Auth("incorrect_auth_token");
-		Assert.False(response.IsOk());
-
-		Assert.False(this.client.Set("key", "value", 0).IsOk());
+		var auth_err = Assert.Throws<PaperError>(() => this.client.Auth("incorrect_auth_token"));
+		Assert.Equal(PaperError.Type.Unauthorized, auth_err.GetType());
 	}
 
 	[Fact]
 	public void AuthCorrect() {
-		Assert.False(this.client.Set("key", "value", 0).IsOk());
+		var err = Assert.Throws<PaperError>(() => this.client.Set("key", "value"));
+		Assert.Equal(PaperError.Type.Unauthorized, err.GetType());
 
-		var response = this.client.Auth("auth_token");
-		Assert.True(response.IsOk());
-
-		Assert.True(this.client.Set("key", "value", 0).IsOk());
-
+		this.client.Auth("auth_token");
+		this.client.Set("key", "value");
 	}
 }

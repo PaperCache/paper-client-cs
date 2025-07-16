@@ -3,14 +3,10 @@ namespace PaperClient.Tests;
 public class WipeTest : PaperClientTest {
 	[Fact]
 	public void Wipe() {
-		Assert.True(this.client.Set("key", "value").IsOk());
+		this.client.Set("key", "value");
+		this.client.Wipe();
 
-		var response = this.client.Wipe();
-		Assert.True(response.IsOk());
-		Assert.NotNull(response.Data());
-
-		var got = this.client.Get("key");
-		Assert.False(got.IsOk());
-		Assert.NotNull(got.ErrData());
+		var err = Assert.Throws<PaperError>(() => this.client.Get("key"));
+		Assert.Equal(PaperError.Type.KeyNotFound, err.GetType());
 	}
 }

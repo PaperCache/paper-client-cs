@@ -1,6 +1,6 @@
 namespace PaperClient;
 
-public struct PaperStats {
+public struct PaperStatus {
 	public UInt32 pid { get; }
 
 	public UInt64 max_size { get; }
@@ -22,7 +22,7 @@ public struct PaperStats {
 
 	public UInt64 uptime { get; }
 
-	public PaperStats(
+	public PaperStatus(
 		UInt32 pid,
 
 		UInt64 max_size,

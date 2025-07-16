@@ -34,6 +34,7 @@ public class PaperClient {
 			this.reconnect_attempts = 0;
 
 			this.tcp_client = new TcpClient(host, port);
+			this.Handshake();
 		} catch {
 			throw new ArgumentException("Connection refused");
 		}
@@ -149,20 +150,23 @@ public class PaperClient {
 		this.Process(writer);
 	}
 
-	public PaperStats Stats() {
+	public PaperStatus Status() {
 		var writer = new SheetWriter();
-		writer.WriteU8((byte)CommandByte.Stats);
+		writer.WriteU8((byte)CommandByte.Status);
 
-		return this.ProcessStats(writer);
+		return this.ProcessStatus(writer);
 	}
 
 	private bool Reconnect() {
+		this.reconnect_attempts++;
+
 		if (this.reconnect_attempts > MAX_RECONNECT_ATTEMPTS) {
 			return false;
 		}
 
 		try {
 			this.tcp_client = new TcpClient(this.host, this.port);
+			this.Handshake();
 
 			if (this.auth_token.Length > 0) {
 				this.Auth(this.auth_token);
@@ -185,7 +189,7 @@ public class PaperClient {
 			if (!is_ok) throw PaperError.FromReader(reader);
 
 			this.reconnect_attempts = 0;
-		} catch {
+		} catch (Exception err) when (err is IOException || err is ObjectDisposedException) {
 			if (!this.Reconnect()) {
 				throw new PaperError(PaperError.Type.Disconnected);
 			}
@@ -206,7 +210,7 @@ public class PaperClient {
 
 			this.reconnect_attempts = 0;
 			return reader.ReadString();
-		} catch {
+		} catch (Exception err) when (err is IOException || err is ObjectDisposedException) {
 			if (!this.Reconnect()) {
 				throw new PaperError(PaperError.Type.Disconnected);
 			}
@@ -227,7 +231,7 @@ public class PaperClient {
 
 			this.reconnect_attempts = 0;
 			return reader.ReadBool();
-		} catch {
+		} catch (Exception err) when (err is IOException || err is ObjectDisposedException) {
 			if (!this.Reconnect()) {
 				throw new PaperError(PaperError.Type.Disconnected);
 			}
@@ -248,7 +252,7 @@ public class PaperClient {
 
 			this.reconnect_attempts = 0;
 			return reader.ReadU32();
-		} catch {
+		} catch (Exception err) when (err is IOException || err is ObjectDisposedException) {
 			if (!this.Reconnect()) {
 				throw new PaperError(PaperError.Type.Disconnected);
 			}
@@ -257,7 +261,7 @@ public class PaperClient {
 		}
 	}
 
-	private PaperStats ProcessStats(SheetWriter writer) {
+	private PaperStatus ProcessStatus(SheetWriter writer) {
 		try {
 			var stream = this.tcp_client.GetStream();
 			writer.Send(ref stream);
@@ -296,7 +300,7 @@ public class PaperClient {
 
 			var uptime = reader.ReadU64();
 
-			return new PaperStats(
+			return new PaperStatus(
 				pid,
 
 				max_size,
@@ -318,9 +322,21 @@ public class PaperClient {
 
 				uptime
 			);
-		} catch {
+		} catch (Exception err) when (err is IOException || err is ObjectDisposedException) {
 			this.Reconnect();
-			return this.ProcessStats(writer);
+			return this.ProcessStatus(writer);
+		}
+	}
+
+	private void Handshake() {
+		try {
+			var stream = this.tcp_client.GetStream();
+			var reader = new SheetReader(stream);
+
+			var is_ok = reader.ReadBool();
+			if (!is_ok) throw PaperError.FromReader(reader);
+		} catch (IOException) {
+			throw new PaperError(PaperError.Type.ConnectionRefused);
 		}
 	}
 }
@@ -345,5 +361,5 @@ enum CommandByte : byte {
 	Resize = 11,
 	Policy = 12,
 
-	Stats = 13,
+	Status = 13,
 }

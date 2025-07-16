@@ -8,9 +8,8 @@ public class PaperClientTest {
 
 		if (auth) {
 			this.client.Auth("auth_token");
+			this.client.Wipe();
 		}
-
-		this.client.Wipe();
     }
 
 	~PaperClientTest() {
